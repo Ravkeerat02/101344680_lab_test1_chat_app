@@ -37,7 +37,7 @@ mongoose.connect(mongoDB,
     // Set static folder
     app.use(express.static(path.join(__dirname, 'public')));
     
-    const botName = "ChatBot";
+    const botName = "Chat Master";
     
     // Run when client connects
     io.on('connection', socket => {
@@ -47,7 +47,7 @@ mongoose.connect(mongoDB,
         socket.join(user.room);
     
         // Welcome current user
-        socket.emit('message', formatMessage(botName, 'Welcome to ChatBot!'));
+        socket.emit('message', formatMessage(botName, 'Welcome back'));
     
         // Broadcast when a user connects
         socket.broadcast
@@ -91,26 +91,26 @@ mongoose.connect(mongoDB,
     });
     
     //http://localhost:3000/signup
-    app.get('/signup', async (req, res) => {
-      res.sendFile('./public/signup');
+    app.get('./signup', async (request, response) => {
+        response.sendFile('/public/signup.html');
     });
     
     //http://localhost:3000/login
-    app.get('/login', async (req, res) => {
-      res.sendFile(__dirname + './public/login')
+    app.get('/login', async (request, response) => {
+        response.sendFile('/public/login.html')
     });
-    app.post('/login', async (req, res) => {
-    const user = new userModel(req.body);
+    app.post('/login', async (request, response) => {
+    const user = new userModel(request.body);
     try {
       await user.save((err) => {
         if(err){
             if (err.code === 11000) {
-               return res.redirect('/signup?err=username')
+               return response.redirect('/signup?err=username')
             }
           
-          res.send(err)
+          response.send(err)
         }else{
-          res.sendFile(__dirname + '/public/login')
+            response.sendFile('/public/login')
         }
       });
     } catch (err) {
@@ -119,51 +119,51 @@ mongoose.connect(mongoDB,
     });
     
     //http://localhost:3000/
-    app.get('/', async (req, res) => {
-    res.sendFile(__dirname + '/public/login')
+    app.get('/', async (request, response) => {
+        response.sendFile(__dirname + './public/login.html')
     });
-    app.post('/', async (req, res) => {
-    const username=req.body.username
-    const password=req.body.password
+    app.post('/', async (request, response) => {
+    const username=request.body.username
+    const password=request.body.password
     
     const user = await userModel.find({username:username});
     
     try {
       if(user.length != 0){
         if(user[0].password==password){
-          return res.redirect('/')
+          return response.redirect('/')
         }
         else{
-          return res.redirect('/login?wrong=pass')
+          return response.redirect('/login?wrong=pass')
         }
       }else{
-        return res.redirect('/login?wrong=uname')
+        return response.redirect('/login?wrong=uname')
       }
     } catch (err) {
-      res.status(500).send(err);
+        response.status(500).send(err);
     }
     });
     
-    
+   
     //http://localhost:3000/chat/covid
-    app.get('/chat/:room', async (req, res) => {
-      const room = req.params.room
+    app.get('/chat/:room', async (request, response) => {
+      const room = request.params.room
       const msg = await gmModel.find({room: room}).sort({'date_sent': 'desc'}).limit(10);
       if(msg.length!=0){
-        res.send(msg)
+        response.send(msg)
       }
       else
-      res.sendFile(__dirname + '/html/chat.html')
+      response.sendFile(__dirname + `<a href="./signup.html">`)
     });
-    app.post('/chat',async(req,res)=>{
-      const username=req.body.username
+    app.post('/chat',async(request,response)=>{
+      const username=request.body.username
       const user = await userModel.find({username:username});
       console.log(user)
       if(user[0].username==username){
-        return res.redirect('/chat/'+username)
+        return response.redirect('/chat/'+username)
       }
       else{
-        return res.redirect('/?err=noUser')
+        return response.redirect('/?err=noUser')
       }
     })
     
