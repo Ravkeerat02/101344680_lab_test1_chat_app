@@ -1,16 +1,19 @@
-const express = require('express')
-const socketio = require('socket.io')
+const path = require('path');
 const http = require('http');
-// const io = socketio(server);    
-const app = express()
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
 
-const userModel = require(__dirname + '../model/')
-const grpModel = require(__dirname + './model/grp_message')
-const prvModel = require(__dirname + './model/prv_message')
+const socketio = require('socket.io');
+const server = http.createServer(app);
+const io = socketio(server);
 
+
+const userModel = require('./model/User')
+const grModel = require('./model/GroupChat')
+const pmModel = require('./model/PrivateChat')
 
 //mongoDB
-const mongoose = require('mongoose')
 const mongoDB = 'mongodb+srv://RK_02:ab8UjMGR44roYdJH@cluster0.iu4uasl.mongodb.net/comp3133_labtest?retryWrites=true&w=majority'
 mongoose.connect(mongoDB, 
     {
@@ -22,13 +25,13 @@ mongoose.connect(mongoDB,
       console.log('Error while MongoDB connection')
     });
     
-    const formatMessage = require('./model/messages');
+    const formatMessage = require('./model/message');
     const {
       userJoin,
       getCurrentUser,
       userLeave,
       getRoomUsers
-    } = require('./models/users');
+    } = require('./model/users');
     
     
     // Set static folder
@@ -89,12 +92,12 @@ mongoose.connect(mongoDB,
     
     //http://localhost:3000/signup
     app.get('/signup', async (req, res) => {
-      res.sendFile(__dirname + 'public/signup.html')
+      res.sendFile('./public/signup');
     });
     
     //http://localhost:3000/login
     app.get('/login', async (req, res) => {
-      res.sendFile(__dirname + 'public/login.html')
+      res.sendFile(__dirname + './public/login')
     });
     app.post('/login', async (req, res) => {
     const user = new userModel(req.body);
@@ -107,7 +110,7 @@ mongoose.connect(mongoDB,
           
           res.send(err)
         }else{
-          res.sendFile(__dirname + '/public/login.html')
+          res.sendFile(__dirname + '/public/login')
         }
       });
     } catch (err) {
@@ -117,7 +120,7 @@ mongoose.connect(mongoDB,
     
     //http://localhost:3000/
     app.get('/', async (req, res) => {
-    res.sendFile(__dirname + '/public/login.html')
+    res.sendFile(__dirname + '/public/login')
     });
     app.post('/', async (req, res) => {
     const username=req.body.username

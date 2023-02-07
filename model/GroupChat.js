@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const grp_messageSchema = new mongoose({
+const grp_messageSchema = mongoose.Schema({
+    
     from_user:{
         type:String, 
         required:true
@@ -11,7 +12,7 @@ const grp_messageSchema = new mongoose({
     },
     message:{
         type:String, 
-        required
+        required:true
     },
     date_sent:{
         type:Date , 
@@ -20,4 +21,4 @@ const grp_messageSchema = new mongoose({
     }
 })
 
-module.exports = mongoose.exports('GroupChat',grp_messageSchema)
+module.exports = mongoose.model('GroupChat',grp_messageSchema)

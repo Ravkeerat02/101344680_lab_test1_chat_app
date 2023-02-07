@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = mongoose.Schema({
   
     username:{
     type: String,
@@ -43,4 +43,4 @@ UserSchema.post('remove', (doc) => {
   console.log('%s has been removed', doc._id);
 });
 
-module.exports = mongoose.exports('User',UserSchema);)
+module.exports = mongoose.model('User',UserSchema);

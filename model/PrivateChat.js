@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const prv_messageScehma = new mongoose.Schema({
+const prv_messageScehma = mongoose.Schema({
     from_user: {
         type: String,
         required: true
@@ -19,4 +19,4 @@ const prv_messageScehma = new mongoose.Schema({
       }
     });
 
-module.exports = mongoose.exports('PrivateChat',prv_messageScehma)
+module.exports = mongoose.model('PrivateChat',prv_messageScehma)
